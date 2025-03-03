@@ -1,0 +1,536 @@
+{
+	"info": {
+		"_postman_id": "667e156c-5a5c-4cf3-b4af-1963f0996755",
+		"name": "WrenAI API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42123318"
+	},
+	"item": [
+		{
+			"name": "SaveDB",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"SaveDataSource\",\r\n  \"variables\": {\r\n    \"data\": {\r\n      \"type\": \"POSTGRES\",\r\n      \"properties\": {\r\n        \"displayName\": \"testing_wrenai\",\r\n        \"host\": \"host.docker.internal\",\r\n        \"port\": \"5432\",\r\n        \"user\": \"postgres\",\r\n        \"password\": \"Mannit@123\",\r\n        \"database\": \"dvdrental\"\r\n      }\r\n    }\r\n  },\r\n  \"query\": \"mutation SaveDataSource($data: DataSourceInput!) {\\n  saveDataSource(data: $data) {\\n    type\\n    properties\\n    __typename\\n  }\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowTableDetails",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"ListDataSourceTables\",\r\n  \"variables\": {},\r\n  \"query\": \"query ListDataSourceTables {\\n  listDataSourceTables {\\n    name\\n    columns {\\n      name\\n      type\\n      __typename\\n    }\\n    __typename\\n  }\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SelectedTables",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"SaveTables\",\r\n  \"variables\": {\r\n    \"data\": {\r\n      \"tables\": [\r\n        \"public.customer\",\r\n        \"public.actor\",\r\n        \"public.category\",\r\n        \"public.film\",\r\n        \"public.film_actor\",\r\n        \"public.film_category\",\r\n        \"public.actor_info\",\r\n        \"public.address\",\r\n        \"public.city\",\r\n        \"public.country\",\r\n        \"public.customer_list\",\r\n        \"public.film_list\",\r\n        \"public.inventory\",\r\n        \"public.language\",\r\n        \"public.nicer_but_slower_film_list\",\r\n        \"public.payment\",\r\n        \"public.rental\",\r\n        \"public.sales_by_film_category\",\r\n        \"public.staff\",\r\n        \"public.store\",\r\n        \"public.sales_by_store\",\r\n        \"public.staff_list\"\r\n      ]\r\n    }\r\n  },\r\n  \"query\": \"mutation SaveTables($data: SaveTablesInput!) {\\n  saveTables(data: $data)\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "recommendQuestion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"GetProjectRecommendationQuestions\",\r\n  \"variables\": {},\r\n  \"query\": \"query GetProjectRecommendationQuestions {\\n  getProjectRecommendationQuestions {\\n    ...CommonRecommendedQuestionsTask\\n    __typename\\n  }\\n}\\n\\nfragment CommonRecommendedQuestionsTask on RecommendedQuestionsTask {\\n  status\\n  questions {\\n    question\\n    category\\n    sql\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AskQuestionfromsuggestion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"CreateThread\",\r\n  \"variables\": {\r\n    \"data\": {\r\n      \"sql\": \"SELECT \\\"cl\\\".\\\"city\\\" AS \\\"demographic_city\\\", \\\"cl\\\".\\\"country\\\" AS \\\"demographic_country\\\", AVG(\\\"p\\\".\\\"amount\\\") AS \\\"average_payment_amount\\\" FROM \\\"public_payment\\\" AS \\\"p\\\" JOIN \\\"public_customer\\\" AS \\\"c\\\" ON \\\"p\\\".\\\"customer_id\\\" = \\\"c\\\".\\\"customer_id\\\" JOIN \\\"public_customer_list\\\" AS \\\"cl\\\" ON \\\"c\\\".\\\"customer_id\\\" = \\\"cl\\\".\\\"id\\\" GROUP BY \\\"cl\\\".\\\"city\\\", \\\"cl\\\".\\\"country\\\"\",\r\n      \"question\": \"How does the average payment amount compare between different customer demographics?\"\r\n    }\r\n  },\r\n  \"query\": \"mutation CreateThread($data: CreateThreadInput!) {\\n  createThread(data: $data) {\\n    id\\n    __typename\\n  }\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetResponseId",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"Thread\",\r\n  \"variables\": {\r\n    \"threadId\": 5\r\n  },\r\n  \"query\": \"query Thread($threadId: Int!) {\\n  thread(threadId: $threadId) {\\n    id\\n    responses {\\n      ...CommonResponse\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\\nfragment CommonResponse on ThreadResponse {\\n  id\\n  threadId\\n  question\\n  sql\\n  view {\\n    id\\n    name\\n    statement\\n    displayName\\n    __typename\\n  }\\n  breakdownDetail {\\n    ...CommonBreakdownDetail\\n    __typename\\n  }\\n  answerDetail {\\n    ...CommonAnswerDetail\\n    __typename\\n  }\\n  chartDetail {\\n    ...CommonChartDetail\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonBreakdownDetail on ThreadResponseBreakdownDetail {\\n  queryId\\n  status\\n  description\\n  steps {\\n    summary\\n    sql\\n    cteName\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\\n\\nfragment CommonAnswerDetail on ThreadResponseAnswerDetail {\\n  queryId\\n  status\\n  content\\n  numRowsUsedInLLM\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonChartDetail on ThreadResponseChartDetail {\\n  queryId\\n  status\\n  description\\n  chartType\\n  chartSchema\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  adjustment\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetThreadResponseDetails_next_call_thread_response",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"ThreadResponse\",\r\n  \"variables\": {\r\n    \"responseId\": 12\r\n  },\r\n  \"query\": \"query ThreadResponse($responseId: Int!) {\\n  threadResponse(responseId: $responseId) {\\n    ...CommonResponse\\n    __typename\\n  }\\n}\\n\\nfragment CommonResponse on ThreadResponse {\\n  id\\n  threadId\\n  question\\n  sql\\n  view {\\n    id\\n    name\\n    statement\\n    displayName\\n    __typename\\n  }\\n  breakdownDetail {\\n    ...CommonBreakdownDetail\\n    __typename\\n  }\\n  answerDetail {\\n    ...CommonAnswerDetail\\n    __typename\\n  }\\n  chartDetail {\\n    ...CommonChartDetail\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonBreakdownDetail on ThreadResponseBreakdownDetail {\\n  queryId\\n  status\\n  description\\n  steps {\\n    summary\\n    sql\\n    cteName\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\\n\\nfragment CommonAnswerDetail on ThreadResponseAnswerDetail {\\n  queryId\\n  status\\n  content\\n  numRowsUsedInLLM\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonChartDetail on ThreadResponseChartDetail {\\n  queryId\\n  status\\n  description\\n  chartType\\n  chartSchema\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  adjustment\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Last_Ques_Based_GetRelavantQuestions",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"GetThreadRecommendationQuestions\",\r\n  \"variables\": {\r\n    \"threadId\": 5\r\n  },\r\n  \"query\": \"query GetThreadRecommendationQuestions($threadId: Int!) {\\n  getThreadRecommendationQuestions(threadId: $threadId) {\\n    ...CommonRecommendedQuestionsTask\\n    __typename\\n  }\\n}\\n\\nfragment CommonRecommendedQuestionsTask on RecommendedQuestionsTask {\\n  status\\n  questions {\\n    question\\n    category\\n    sql\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "previewdata",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"PreviewData\",\r\n  \"variables\": {\r\n    \"where\": {\r\n      \"responseId\": 12\r\n    }\r\n  },\r\n  \"query\": \"mutation PreviewData($where: PreviewDataInput!) {\\n  previewData(where: $where)\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "askquestion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"CreateAskingTask\",\r\n  \"variables\": {\r\n    \"data\": {\r\n      \"question\": \"Top 5 actors, who has total number of movies produced by some of the actors\",\r\n      \"threadId\": 2\r\n    }\r\n  },\r\n  \"query\": \"mutation CreateAskingTask($data: AskingTaskInput!) {\\n  createAskingTask(data: $data) {\\n    id\\n    __typename\\n  }\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getTaskDetails_FC",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"AskingTask\",\r\n  \"variables\": {\r\n    \"taskId\": \"7bc34e4f-a72f-436a-a9a2-54a1f0061294\"\r\n  },\r\n  \"query\": \"query AskingTask($taskId: String!) {\\n  askingTask(taskId: $taskId) {\\n    status\\n    type\\n    candidates {\\n      sql\\n      type\\n      view {\\n        id\\n        name\\n        statement\\n        displayName\\n        __typename\\n      }\\n      __typename\\n    }\\n    error {\\n      ...CommonError\\n      __typename\\n    }\\n    intentReasoning\\n    __typename\\n  }\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create_instant_recommedation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"operationName\": \"CreateInstantRecommendedQuestions\",\r\n    \"variables\": {\r\n        \"data\": {\r\n            \"previousQuestions\": [\r\n                \"How does the average payment amount compare between different customer demographics?\",\r\n                \"report to generate actors and number of movies\"\r\n            ]\r\n        }\r\n    },\r\n    \"query\": \"mutation CreateInstantRecommendedQuestions($data: InstantRecommendedQuestionsInput!) {\\n  createInstantRecommendedQuestions(data: $data) {\\n    id\\n    __typename\\n  }\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_instant_recomended_question",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"InstantRecommendedQuestions\",\r\n  \"variables\": {\r\n    \"taskId\": \"2bdaabce-7b47-4e46-9d38-b71cfd417d9d\"\r\n  },\r\n  \"query\": \"query InstantRecommendedQuestions($taskId: String!) {\\n  instantRecommendedQuestions(taskId: $taskId) {\\n    ...CommonRecommendedQuestionsTask\\n    __typename\\n  }\\n}\\n\\nfragment CommonRecommendedQuestionsTask on RecommendedQuestionsTask {\\n  status\\n  questions {\\n    question\\n    category\\n    sql\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getTaskDetails_Success",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"AskingTask\",\r\n  \"variables\": {\r\n    \"taskId\": \"2044b446-bd73-4050-ac03-3e65374bdd7f\"\r\n  },\r\n  \"query\": \"query AskingTask($taskId: String!) {\\n  askingTask(taskId: $taskId) {\\n    status\\n    type\\n    candidates {\\n      sql\\n      type\\n      view {\\n        id\\n        name\\n        statement\\n        displayName\\n        __typename\\n      }\\n      __typename\\n    }\\n    error {\\n      ...CommonError\\n      __typename\\n    }\\n    intentReasoning\\n    __typename\\n  }\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetThreadReponseDetailsQA",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"CreateThreadResponse\",\r\n  \"variables\": {\r\n    \"threadId\": 2,\r\n    \"data\": {\r\n       \"sql\": \"SELECT\\n  CONCAT (\\\"a\\\".\\\"first_name\\\", ' ', \\\"a\\\".\\\"last_name\\\") AS \\\"actor_name\\\",\\n  COUNT(DISTINCT \\\"fa\\\".\\\"film_id\\\") AS \\\"total_movies\\\"\\nFROM\\n  \\\"public_actor\\\" AS \\\"a\\\"\\n  JOIN \\\"public_film_actor\\\" AS \\\"fa\\\" ON \\\"a\\\".\\\"actor_id\\\" = \\\"fa\\\".\\\"actor_id\\\"\\nGROUP BY\\n  \\\"a\\\".\\\"first_name\\\",\\n  \\\"a\\\".\\\"last_name\\\"\\nORDER BY\\n  \\\"total_movies\\\" DESC\\nLIMIT\\n  5\",\r\n      \"question\": \"Top 5 actors, who has total number of movies produced by some of the actors\"\r\n    }\r\n  },\r\n  \"query\": \"mutation CreateThreadResponse($threadId: Int!, $data: CreateThreadResponseInput!) {\\n  createThreadResponse(threadId: $threadId, data: $data) {\\n    ...CommonResponse\\n    __typename\\n  }\\n}\\n\\nfragment CommonResponse on ThreadResponse {\\n  id\\n  threadId\\n  question\\n  sql\\n  view {\\n    id\\n    name\\n    statement\\n    displayName\\n    __typename\\n  }\\n  breakdownDetail {\\n    ...CommonBreakdownDetail\\n    __typename\\n  }\\n  answerDetail {\\n    ...CommonAnswerDetail\\n    __typename\\n  }\\n  chartDetail {\\n    ...CommonChartDetail\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonBreakdownDetail on ThreadResponseBreakdownDetail {\\n  queryId\\n  status\\n  description\\n  steps {\\n    summary\\n    sql\\n    cteName\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\\n\\nfragment CommonAnswerDetail on ThreadResponseAnswerDetail {\\n  queryId\\n  status\\n  content\\n  numRowsUsedInLLM\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonChartDetail on ThreadResponseChartDetail {\\n  queryId\\n  status\\n  description\\n  chartType\\n  chartSchema\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  adjustment\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetThreadResponseQA_next_previewdata",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "responseId=7",
+							"value": "10",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GenerateChart_next_call_Thread_response",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"GenerateThreadResponseChart\",\r\n  \"variables\": {\r\n    \"responseId\": 12\r\n  },\r\n  \"query\": \"mutation GenerateThreadResponseChart($responseId: Int!) {\\n  generateThreadResponseChart(responseId: $responseId) {\\n    ...CommonResponse\\n    __typename\\n  }\\n}\\n\\nfragment CommonResponse on ThreadResponse {\\n  id\\n  threadId\\n  question\\n  sql\\n  view {\\n    id\\n    name\\n    statement\\n    displayName\\n    __typename\\n  }\\n  breakdownDetail {\\n    ...CommonBreakdownDetail\\n    __typename\\n  }\\n  answerDetail {\\n    ...CommonAnswerDetail\\n    __typename\\n  }\\n  chartDetail {\\n    ...CommonChartDetail\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonBreakdownDetail on ThreadResponseBreakdownDetail {\\n  queryId\\n  status\\n  description\\n  steps {\\n    summary\\n    sql\\n    cteName\\n    __typename\\n  }\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonError on Error {\\n  code\\n  shortMessage\\n  message\\n  stacktrace\\n  __typename\\n}\\n\\nfragment CommonAnswerDetail on ThreadResponseAnswerDetail {\\n  queryId\\n  status\\n  content\\n  numRowsUsedInLLM\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  __typename\\n}\\n\\nfragment CommonChartDetail on ThreadResponseChartDetail {\\n  queryId\\n  status\\n  description\\n  chartType\\n  chartSchema\\n  error {\\n    ...CommonError\\n    __typename\\n  }\\n  adjustment\\n  __typename\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset Project",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"operationName\": \"ResetCurrentProject\",\r\n  \"variables\": {},\r\n  \"query\": \"mutation ResetCurrentProject {\\n  resetCurrentProject\\n}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/codesmell",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"codesmell"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
