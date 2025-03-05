@@ -29,7 +29,6 @@ const Register: React.FC = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-14 shadow-sm">
         <div className="mb-6 flex flex-col items-center">
-          {/* Logo image with shadow */}
           <div className="mb-6 flex h-24 w-20 items-center justify-center">
             <svg
               viewBox="0 0 24 24"
@@ -48,7 +47,7 @@ const Register: React.FC = () => {
             </svg>
           </div>
           <h1 className="text-2xl font-semibold text-gray-900">Welcome</h1>
-          <p className="mt-2 text-center text-gray-600">Create in to Code Sense AI</p>
+          <p className="mt-2 text-center text-gray-600">Create an account to Code Sense AI</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
@@ -92,7 +91,7 @@ const Register: React.FC = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
               </button>
             </div>
           </div>

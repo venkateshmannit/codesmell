@@ -58,9 +58,9 @@ export default function Header() {
             Home
           </a>
           {/* Uncomment or add more links as needed */}
-          {/* <a href="/modeling" className="px-3 py-1 text-sm font-medium">
+          <a href="/modeling" className="px-3 py-1 text-sm font-medium">
             Modeling
-          </a> */}
+          </a> 
         </nav>
       </div>
 

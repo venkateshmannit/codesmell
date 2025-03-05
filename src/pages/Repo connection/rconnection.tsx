@@ -19,20 +19,20 @@ import Header from '../../components/Header';
 function RepoCon() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    projectName: '',
-    databaseType: '',
-    sourceType: '', // 'self-hosted' or 'imported'
+    projectName: "",
+    databaseType: "",
+    sourceType: "", // 'self-hosted' or 'imported'
     connectionDetails: {
-      hostname: '',
-      port: '',
-      databaseName: '',
-      username: '',
-      password: '',
+      hostname: "",
+      port: "",
+      databaseName: "",
+      username: "",
+      password: "",
       useSSL: false,
       sslConfig: {},
-      apiKey: '',
-      accountId: '',
-      datasetId: '',
+      apiKey: "",
+      accountId: "",
+      datasetId: "",
     },
     selectedTables: [],
     isConnected: false,
@@ -41,58 +41,58 @@ function RepoCon() {
   });
 
   const updateFormData = (data: any) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    setFormData((prev) => ({ ...prev, ...data }));
   };
 
   const handleNext = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 4));
+    setCurrentStep((prev) => Math.min(prev + 1, 4));
   };
 
   const handleBack = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Final submission logic would go here
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
-          <ProjectInfoForm 
-            formData={formData} 
-            updateFormData={updateFormData} 
-            onNext={handleNext} 
+          <ProjectInfoForm
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNext}
           />
         );
       case 2:
         return (
-          <DatabaseTypeSelection 
-            formData={formData} 
-            updateFormData={updateFormData} 
-            onNext={handleNext} 
-            onBack={handleBack} 
+          <DatabaseTypeSelection
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNext}
+            onBack={handleBack}
           />
         );
       case 3:
         return (
-          <ConnectionDetailsForm 
-            formData={formData} 
-            updateFormData={updateFormData} 
-            onNext={handleNext} 
-            onBack={handleBack} 
+          <ConnectionDetailsForm
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={handleNext}
+            onBack={handleBack}
           />
         );
       case 4:
         return (
-          <DatabaseExplorer 
-            formData={formData} 
-            updateFormData={updateFormData} 
-            onBack={handleBack} 
-            onFinish={handleSubmit} 
+          <DatabaseExplorer
+            formData={formData}
+            updateFormData={updateFormData}
+            onBack={handleBack}
+            onFinish={handleSubmit}
           />
         );
       default:
@@ -101,24 +101,26 @@ function RepoCon() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 flex flex-col items-center justify-center p-4">
       {/* Full-width fixed header */}
-      <div className="w-full fixed top-0 left-0 z-50 mb-16">
+      <div className="w-full fixed top-0 left-0 z-50">
         <Header />
       </div>
 
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-gray-300 mt-16">
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
-          <h1 className="text-2xl font-bold text-white">Database Connection Setup</h1>
-          <p className="text-indigo-100">Connect your data source in a few simple steps</p>
+      {/* Card styled in pandu flow with responsive fixed height */}
+      <div className="w-full sm:w-10/12 md:w-8/12 h-auto md:h-[600px] bg-white rounded-2xl shadow-2xl overflow-hidden ring-1 ring-gray-300 mt-20">
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-2">
+          <h1 className="text-2xl font-bold text-white">
+            Database Connection Setup
+          </h1>
+          <p className="text-purple-100 text-xs">
+            Connect your data source in a few simple steps
+          </p>
         </div>
-        
+
         <div className="p-6">
           <StepIndicator currentStep={currentStep} totalSteps={4} />
-          
-          <div className="mt-8">
-            {renderStep()}
-          </div>
+          <div className="mt-8">{renderStep()}</div>
         </div>
       </div>
     </div>

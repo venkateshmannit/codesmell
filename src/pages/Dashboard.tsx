@@ -1,12 +1,10 @@
-// src/pages/Dashboard.tsx
 import React, { useState, useEffect } from 'react';
-import { LogOut, Code, Users, Loader, XCircle } from 'lucide-react';
+import { Loader, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { api } from '../config/api';
 import { useAuth } from '../context/AuthContext';
-import { RepositoryResponse, Repository } from '../types';
+import { Repository } from '../types';
 import Header from '../components/Header';
 
 export const Dashboard: React.FC = () => {
@@ -14,28 +12,22 @@ export const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
 
   const isGithubUser = user?.authType === 'github';
-  const finalAuthKey = user?.api_key;
 
-  // Common state
+  // Form states
   const [branch, setBranch] = useState('');
-  const [activeTab, setActiveTab] = useState<'developer' | 'user'>('developer');
-  const [query, setQuery] = useState('');
-  const [response, setResponse] = useState<RepositoryResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-
-  // Developer view state:
-  // For traditional users: manual input only.
-  // For GitHub users: radio group to choose between "Your Repository" (dropdown) and "Public Repo" (manual).
   const [repositoryManual, setRepositoryManual] = useState('');
   const [repositoryDropdown, setRepositoryDropdown] = useState('');
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
-  const [repoType, setRepoType] = useState<'public' | 'your'>('public');
+
+  // New state: list of selected repositories (repo name and branch)
+  const [selectedRepos, setSelectedRepos] = useState<
+    { repo: string; branch: string }[]
+  >([]);
 
   useEffect(() => {
     const fetchRepos = async () => {
-      if (isGithubUser && repoType === 'your') {
+      if (isGithubUser) {
         setLoadingRepos(true);
         try {
           const accessToken = user?.api_key;
@@ -55,66 +47,24 @@ export const Dashboard: React.FC = () => {
       }
     };
     fetchRepos();
-  }, [isGithubUser, repoType, user]);
+  }, [isGithubUser, user]);
 
-  const finalRepository = isGithubUser
-    ? (repoType === 'your' ? repositoryDropdown : repositoryManual)
-    : repositoryManual;
+  // Determine current repository selection
+  const currentRepo = isGithubUser ? repositoryDropdown : repositoryManual;
 
-  const handleIndexRepository = async () => {
-    if (!finalRepository || !branch) {
+  // Handler for the Finish button
+  const handleFinish = () => {
+    if (!currentRepo || !branch) {
       toast.error('Please provide both repository and branch');
       return;
     }
-    setLoading(true);
-    try {
-      const res = await axios.post(
-        api.indexRepository,
-        { repository: finalRepository, branch },
-        { headers: { 'API-Key': finalAuthKey } }
-      );
-      if (res.status === 200) {
-        setMessage('Repository indexed successfully!');
-      }
-      // Automatically switch to User tab
-      setActiveTab('user');
-    } catch (error: any) {
-      if (error.response && error.response.status === 401) {
-        setMessage('Repository indexed successfully!');
-      } else {
-        setMessage('Repository indexed successfully!');
-      }
-      console.error('Index repository error:', error);
-      setActiveTab('user'); // Switch to user tab even on error
-    }
-    setLoading(false);
-  };
-
-  const handleAnalyzeRepository = async () => {
-    if (!finalRepository || !branch || !query) {
-      toast.error('Please fill in repository, branch, and query');
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await axios.post<RepositoryResponse>(
-        api.repositoryAnalysis,
-        { repository: finalRepository, branch, query, role: 'user' },
-        { headers: { 'API-Key': finalAuthKey } }
-      );
-      setResponse(res.data);
-      setMessage(res.data.message || 'Analysis completed successfully!');
-    } catch (error) {
-      setMessage('Failed to analyze repository.');
-      console.error('Analyze repository error:', error);
-    }
-    setLoading(false);
-  };
-
-  const handleClearAnalysis = () => {
-    setResponse(null);
-    setQuery('');
-    setMessage(null);
+    const updatedRepos = [...selectedRepos, { repo: currentRepo, branch }];
+    setSelectedRepos(updatedRepos);
+    toast.success('Repository added!');
+    // Save the selected repositories to session storage
+    sessionStorage.setItem('selectedRepos', JSON.stringify(updatedRepos));
+    // Navigate to the /chatpage
+    navigate('/chatpage');
   };
 
   const handleLogout = () => {
@@ -123,102 +73,71 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center p-6">
-      {/* Full-width fixed header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 relative flex flex-col">
+      {/* Fixed Header */}
       <div className="w-full fixed top-0 left-0 z-50">
         <Header />
       </div>
 
-      <div className="bg-white rounded-2xl shadow-2xl p-8 space-y-8 mt-24 w-full max-w-4xl transition-all duration-300">
-        {/* Tab Navigation */}
-        <div className="flex border-b">
-          <button
-            onClick={() => setActiveTab('developer')}
-            className={`flex-1 py-3 text-center font-semibold border-b-2 transition-colors ${
-              activeTab === 'developer'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <Code className="inline-block w-5 h-5 mr-2" /> Developer View
-          </button>
-          <button
-            onClick={() => setActiveTab('user')}
-            className={`flex-1 py-3 text-center font-semibold border-b-2 transition-colors ${
-              activeTab === 'user'
-                ? 'border-indigo-600 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <Users className="inline-block w-5 h-5 mr-2" /> User View
-          </button>
+      {/* Decorative Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-green-500/10 dark:bg-green-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-500/10 dark:bg-teal-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-64 h-64 bg-green-500/10 dark:bg-green-500/20 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-10 mt-20 space-y-8">
+        <div className="max-w-4xl w-full text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-teal-600">
+            repo selection page dashbord
+          </h1>
+          <p className="text-xl text-gray-700 dark:text-gray-300">
+            Manage your repositories and ask questions about your projects.
+          </p>
         </div>
 
-        {/* Developer Section */}
-        {activeTab === 'developer' && (
-          <div className="space-y-6 transition-all duration-300">
-            {isGithubUser && (
+        {/* Repository Selection Form */}
+        <div className="group relative w-full max-w-4xl">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 space-y-6 shadow-2xl">
+            {isGithubUser ? (
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Repository Type
-                </label>
-                <div className="flex space-x-6 mt-2">
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      value="public"
-                      checked={repoType === 'public'}
-                      onChange={() => setRepoType('public')}
-                      className="form-radio h-5 w-5 text-indigo-600"
-                    />
-                    <span className="ml-2 text-gray-700">Public Repo</span>
-                  </label>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      value="your"
-                      checked={repoType === 'your'}
-                      onChange={() => setRepoType('your')}
-                      className="form-radio h-5 w-5 text-indigo-600"
-                    />
-                    <span className="ml-2 text-gray-700">Your Repository</span>
-                  </label>
-                </div>
-              </div>
-            )}
-
-            {repoType === 'your' && isGithubUser ? (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200">
                   Select Your Repository
                 </label>
                 {loadingRepos ? (
-                  <div className="flex justify-center mt-2">
-                    <Loader className="animate-spin h-8 w-8 text-indigo-600" />
+                  <div className="flex justify-center mt-3">
+                    <Loader className="animate-spin h-8 w-8 text-green-600" />
                   </div>
                 ) : (
-                  <select
-                    className="mt-2 block w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    value={repositoryDropdown}
-                    onChange={(e) => setRepositoryDropdown(e.target.value)}
-                  >
-                    <option value="">Select a repository</option>
-                    {repositories.map((repo) => (
-                      <option key={repo.full_name} value={repo.full_name}>
-                        {repo.full_name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative mt-3">
+                    <select
+                      className="block appearance-none w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 py-3 px-4 pr-10 rounded-md leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      value={repositoryDropdown}
+                      onChange={(e) => setRepositoryDropdown(e.target.value)}
+                    >
+                      <option value="">Select a repository</option>
+                      {repositories.map((repo) => (
+                        <option key={repo.full_name} value={repo.full_name}>
+                          {repo.full_name}
+                        </option>
+                      ))}
+                    </select>
+                    {/* <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <ArrowDown className="h-4 w-4" />
+                    </div> */}
+                  </div>
                 )}
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200">
                   Repository (username/repository_name)
                 </label>
                 <input
                   type="text"
-                  className="mt-2 block w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-3 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="e.g. github_username/repository_name"
                   value={repositoryManual}
                   onChange={(e) => setRepositoryManual(e.target.value)}
@@ -227,105 +146,28 @@ export const Dashboard: React.FC = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Branch</label>
+              <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200">
+                Branch
+              </label>
               <input
                 type="text"
-                className="mt-2 block w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-3 block w-full border border-gray-300 dark:border-gray-600 rounded-md p-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="main"
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
               />
             </div>
 
-            <button
-              onClick={handleIndexRepository}
-              disabled={loading}
-              className="w-full py-2 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md font-medium shadow-md transition-colors"
-            >
-              {loading ? <Loader className="animate-spin inline-block" /> : 'Index Repository'}
-            </button>
-          </div>
-        )}
-
-        {/* User Section */}
-        {activeTab === 'user' && (
-          <div className="space-y-6 transition-all duration-300">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Repository</label>
-              <input
-                type="text"
-                readOnly
-                className="mt-2 block w-full bg-gray-100 border border-gray-300 rounded-md p-2"
-                placeholder="Repository from Developer section"
-                value={finalRepository}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Branch</label>
-              <input
-                type="text"
-                readOnly
-                className="mt-2 block w-full bg-gray-100 border border-gray-300 rounded-md p-2"
-                placeholder="Branch from Developer section"
-                value={branch}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Analysis Query</label>
-              <textarea
-                rows={4}
-                className="mt-2 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter your analysis query..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <button
-              onClick={handleAnalyzeRepository}
-              disabled={loading}
-              className="w-full py-2 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md font-medium shadow-md transition-colors"
-            >
-              {loading ? <Loader className="animate-spin inline-block" /> : 'Analyze Repository'}
-            </button>
-            {response && (
+            <div className="flex justify-end">
               <button
-                onClick={handleClearAnalysis}
-                className="mt-2 w-full py-2 px-4 text-white bg-gray-600 hover:bg-gray-700 rounded-md font-medium shadow-md transition-colors"
+                onClick={handleFinish}
+                className="py-3 px-6 text-white bg-green-600 hover:bg-green-700 rounded-md font-semibold shadow-lg transition-colors flex items-center justify-center"
               >
-                Project Analysis
+                Finish
               </button>
-            )}
-          </div>
-        )}
-
-        {/* Analysis Result */}
-        {response && (
-          <div className="bg-gray-50 p-6 rounded-xl shadow-inner transition-all duration-300">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Analysis Result</h3>
-            <div className="p-4 border border-gray-300 rounded-lg bg-white shadow-md">
-              <h2 className="text-lg underline font-medium text-indigo-700 mb-2">Source Code Reference</h2>
-              <h3 className="font-semibold text-indigo-700">
-                {response.source && response.source.length > 0
-                  ? response.source.join(', ')
-                  : 'No source information available'}
-              </h3>
-              <div className="text-gray-700 mt-4 whitespace-pre-line">
-                <h2 className="text-lg underline font-medium text-indigo-700 mb-2">Project Reference</h2>
-                {response.content}
-              </div>
             </div>
           </div>
-        )}
-
-        {/* Message Pop-up */}
-        {message && (
-          <div className="fixed top-4 right-4 bg-indigo-600 text-white py-3 px-5 rounded-lg shadow-lg transition-all duration-300 flex items-center">
-            <span>{message}</span>
-            <button onClick={() => setMessage(null)} className="ml-3 focus:outline-none">
-              <XCircle className="w-5 h-5" />
-            </button>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -42,13 +42,13 @@ const ProjectInfoForm: React.FC<ProjectInfoFormProps> = ({
 
   return (
     <div className="animate-fadeIn">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Project Information</h2>
+      <h2 className="text-2xl font-bold mb-6 text-purple-800">Project Information</h2>
       
       <form onSubmit={handleSubmit}>
         <div className="mb-8">
           <label 
             htmlFor="projectName" 
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-purple-700 mb-2"
           >
             Project Name <span className="text-red-500">*</span>
           </label>
@@ -59,7 +59,7 @@ const ProjectInfoForm: React.FC<ProjectInfoFormProps> = ({
             value={formData.projectName}
             onChange={handleChange}
             placeholder="Enter your project name"
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.projectName ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -71,7 +71,7 @@ const ProjectInfoForm: React.FC<ProjectInfoFormProps> = ({
         <div className="flex justify-end">
           <button
             type="submit"
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:-translate-y-1"
+            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:-translate-y-1"
           >
             Next
             <ArrowRight size={18} />

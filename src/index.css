@@ -1,7 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@layer utilities {
+  .font-ulp {
+    font-family: 'YourCustomFont', sans-serif;
+  }
+}
 @layer base {
   body {
     @apply font-ulp text-[16px] leading-[24px] text-[#1E212A] font-normal;

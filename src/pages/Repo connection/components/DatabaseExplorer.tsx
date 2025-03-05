@@ -21,10 +21,8 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate loading tables from the database
     const loadTables = () => {
       setIsLoading(true);
-      // Mock data - in a real app, this would be fetched from the backend
       setTimeout(() => {
         const mockTables = [
           'users',
@@ -41,11 +39,14 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
           'events',
         ];
         setAvailableTables(mockTables);
+        if (!formData.selectedTables || formData.selectedTables.length === 0) {
+          updateFormData({ selectedTables: mockTables });
+        }
         setIsLoading(false);
       }, 1500);
     };
     loadTables();
-  }, []);
+  }, [formData.selectedTables, updateFormData]);
 
   const handleTableToggle = (tableName: string) => {
     const updatedTables = formData.selectedTables.includes(tableName)
@@ -67,16 +68,21 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
 
   const handleFinish = (e: React.FormEvent) => {
     onFinish(e);
-    navigate('/chatpage');
+    navigate('/panduchat');
   };
 
   return (
+    <div
+    className="overflow-y-auto"
+    style={{ maxHeight: '400px', msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+  >
+    
     <div className="animate-fadeIn bg-white p-8 rounded-2xl shadow-lg">
       <h2 className="text-2xl font-bold mb-8 text-gray-800">Database Explorer</h2>
 
-      <div className="mb-8 p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
-        <h3 className="text-md font-medium text-indigo-800 mb-2">Connected Database</h3>
-        <div className="flex items-center gap-2 text-indigo-700">
+      <div className="mb-8 p-4 bg-purple-50 border border-purple-100 rounded-lg">
+        <h3 className="text-md font-medium text-purple-800 mb-2">Connected Database</h3>
+        <div className="flex items-center gap-2 text-purple-700">
           <Database size={20} />
           <span className="font-semibold">{getConnectionDisplayName()}</span>
         </div>
@@ -91,7 +97,7 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search tables..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors"
             />
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           </div>
@@ -99,7 +105,7 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
 
         {isLoading ? (
           <div className="flex justify-center items-center h-48">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
           </div>
         ) : (
           <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -119,7 +125,7 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
                     <div
                       className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
                         formData.selectedTables.includes(table)
-                          ? 'bg-indigo-600'
+                          ? 'bg-purple-600'
                           : 'border border-gray-300'
                       }`}
                     >
@@ -152,11 +158,12 @@ const DatabaseExplorer: React.FC<DatabaseExplorerProps> = ({
         <button
           type="button"
           onClick={handleFinish}
-          className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors w-full sm:w-auto"
+          className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors w-full sm:w-auto"
         >
           Finish Setup
         </button>
       </div>
+    </div>
     </div>
   );
 };

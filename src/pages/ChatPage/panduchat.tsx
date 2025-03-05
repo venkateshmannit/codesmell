@@ -1,127 +1,84 @@
-// src/pages/ChatPage/chatpage.tsx
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { jsPDF } from "jspdf";
+import React, { useState } from "react";
 import {
   MessageSquare,
   ChevronRight,
   Copy as CopyIcon,
   Check,
-  Download
+  Download,
 } from "lucide-react";
-import Header from "../../components/Header";
-import LeftSidebar from "./components/LeftSidebar";
+import { jsPDF } from "jspdf";
+import Header from "../../components/Header1";
+import LeftSidebar from "./panducom/LeftSidebar";
 
-// Dummy repository info for a manual repo.
 const repoData = {
   name: "MyRepo",
   branch: "main",
-  authType: "manual"
+  tree: [
+    {
+      type: "folder",
+      name: "src",
+      children: [
+        { type: "file", name: "index.js" },
+        { type: "file", name: "App.js" },
+        {
+          type: "folder",
+          name: "components",
+          children: [
+            { type: "file", name: "Dashboard.js" },
+            { type: "file", name: "Header.js" },
+          ],
+        },
+      ],
+    },
+    { type: "file", name: "package.json" },
+    { type: "file", name: "README.md" },
+  ],
 };
 
 const suggestions = [
   {
     title: "Ranking",
-    text: "Which are the top 3 cities with the highest number of orders?"
+    text: "Which are the top 3 cities with the highest number of orders?",
   },
   {
     title: "Aggregation",
-    text: "What is the average score of reviews submitted for orders placed by customers in the last month?"
+    text: "What is the average score of reviews submitted for orders placed by customers in the last month?",
   },
   {
     title: "Aggregation",
-    text: "What is the total value of payments made by customers from each state?"
-  }
+    text: "What is the total value of payments made by customers from each state?",
+  },
 ];
 
-const ChatPage: React.FC = () => {
+const Panduchat = () => {
   const [inputText, setInputText] = useState("");
-  const [history, setHistory] = useState<any[]>([]);
-  const [archive, setArchive] = useState<any[]>([]);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [history, setHistory] = useState([]);
+  const [archive, setArchive] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [copySuccess, setCopySuccess] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  // States for repository selection (if needed)
-  const [repositoryManual, setRepositoryManual] = useState("");
-  const [repositoryDropdown, setRepositoryDropdown] = useState("");
-  // State to store the fetched file tree.
-  const [fileTree, setFileTree] = useState<any[]>([]);
 
-  // On mount, fetch file tree and simulate repository indexing.
-  useEffect(() => {
-    const fetchFileTree = async () => {
-      try {
-        const res = await axios.post("http://localhost:5000/api/filetree", {
-          repository: repoData.name,
-          branch: repoData.branch
-        });
-        if (res.data && res.data.tree) {
-          setFileTree(res.data.tree);
-        }
-      } catch (error) {
-        console.error("Failed to fetch file tree", error);
-      }
-    };
-
-    const indexRepo = async () => {
-      try {
-        // Use a dummy repository ID from your dummy data.
-        const repositoryId = "5f7a0521-e07c-42c8-a000-2a0aebfe22b0";
-        const res = await axios.post(`http://localhost:5000/api/index_repository/${repositoryId}`, {
-          repository: repoData.name,
-          branch: repoData.branch
-        });
-        console.log("Indexing response:", res.data);
-      } catch (error) {
-        console.error("Failed to index repository", error);
-      }
-    };
-
-    fetchFileTree();
-    indexRepo();
-  }, []);
-
-  // Handler for user query submission.
-  const handleAsk = async () => {
+  const handleAsk = () => {
     if (inputText.trim() !== "") {
-      // Append user's query.
-      setMessages((prev) => [...prev, { role: "user", text: inputText }]);
-      // Prepare payload for query.
-      const payload = {
-        messages: [{ role: "user", content: inputText }],
-        repositories: [{ repository: repoData.name }],
-        stream: false
+      const newItem = { id: Date.now(), text: inputText };
+      const userMsg = { role: "user", text: inputText };
+      const botMsg = {
+        role: "bot",
+        text: `Repository '${repoData.name}' on branch '${repoData.branch}' includes ${repoData.tree.length} top-level items: ${repoData.tree
+          .map((item) => item.name)
+          .join(", ")}.`,
       };
-      try {
-        const res = await axios.post("http://localhost:5000/api/query", payload);
-        if (res.data && res.data.content) {
-          setMessages((prev) => [
-            ...prev,
-            { role: "bot", text: res.data.content }
-          ]);
-        } else {
-          setMessages((prev) => [
-            ...prev,
-            { role: "bot", text: "Unexpected response from the server." }
-          ]);
-        }
-      } catch (error) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "bot", text: "Error fetching response from the server." }
-        ]);
-      }
-      // Save the query in history.
-      setHistory((prev) => [{ id: Date.now(), text: inputText }, ...prev]);
+      setMessages([...messages, userMsg, botMsg]);
+      setHistory([newItem, ...history]);
       setInputText("");
     }
   };
 
-  const handleSuggestionClick = (text: string) => {
+  const handleSuggestionClick = (text) => {
     setInputText(text);
   };
 
-  const handleCopyFromHistory = (text: string) => {
+  const handleCopyFromHistory = (text) => {
     setInputText(text);
   };
 
@@ -129,13 +86,13 @@ const ChatPage: React.FC = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const handleHistoryEdit = (id: number, newText: string) => {
+  const handleHistoryEdit = (id, newText) => {
     setHistory((prev) =>
       prev.map((item) => (item.id === id ? { ...item, text: newText } : item))
     );
   };
 
-  const handleHistoryRename = (id: number) => {
+  const handleHistoryRename = (id) => {
     const newName = prompt("Enter new name for the history item:");
     if (newName && newName.trim() !== "") {
       setHistory((prev) =>
@@ -144,11 +101,11 @@ const ChatPage: React.FC = () => {
     }
   };
 
-  const handleHistoryDelete = (id: number) => {
+  const handleHistoryDelete = (id) => {
     setHistory((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleHistoryArchive = (id: number) => {
+  const handleHistoryArchive = (id) => {
     const item = history.find((item) => item.id === id);
     if (item) {
       setArchive((prev) => [...prev, item]);
@@ -156,7 +113,7 @@ const ChatPage: React.FC = () => {
     }
   };
 
-  const handleHistoryExport = (id: number) => {
+  const handleHistoryExport = (id) => {
     const item = history.find((item) => item.id === id);
     if (item) {
       const doc = new jsPDF();
@@ -188,10 +145,6 @@ const ChatPage: React.FC = () => {
     doc.save("conversation.pdf");
   };
 
-  // For manual repositories, determine the current repo selection.
-  const currentRepo =
-    repoData.authType === "github" ? repositoryDropdown : repositoryManual;
-
   return (
     <>
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 relative flex flex-col overflow-hidden">
@@ -210,15 +163,12 @@ const ChatPage: React.FC = () => {
             overscroll-behavior: none;
           }
         `}</style>
-        <div className="flex h-screen w-full bg-green-50 relative ">
+        <div className="flex h-screen w-full bg-gray-100 relative ">
           <div
-            className={`transition-all duration-300 ${
-              isSidebarOpen ? "w-72" : "w-0"
-            } overflow-hidden`}
+            className={`transition-all duration-300 ${isSidebarOpen ? "w-72" : "w-0"} overflow-hidden`}
           >
             <LeftSidebar
               repo={repoData}
-              fileTree={fileTree}
               history={history}
               onCopy={handleCopyFromHistory}
               onToggle={toggleSidebar}
@@ -252,16 +202,13 @@ const ChatPage: React.FC = () => {
             <div className="flex justify-end items-center space-x-2 p-2">
               <button onClick={handleCopyAllHistory} title="Copy full conversation">
                 {copySuccess ? (
-                  <Check className="w-5 h-5 text-green-600" />
+                  <Check className="w-5 h-5 text-purple-600" />
                 ) : (
-                  <CopyIcon className="w-5 h-5 text-gray-600" />
+                  <CopyIcon className="w-5 h-5 text-purple-600" />
                 )}
               </button>
-              <button
-                onClick={handleExportFullHistory}
-                title="Export full conversation to PDF"
-              >
-                <Download className="w-5 h-5 text-gray-600" />
+              <button onClick={handleExportFullHistory} title="Export full conversation to PDF">
+                <Download className="w-5 h-5 text-purple-600" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 hide-scrollbar no-overscroll">
@@ -274,7 +221,7 @@ const ChatPage: React.FC = () => {
                     <span
                       className={`inline-block p-2 rounded ${
                         msg.role === "user"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-purple-100 text-purple-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
@@ -288,10 +235,10 @@ const ChatPage: React.FC = () => {
                     {suggestions.map((suggestion, index) => (
                       <div
                         key={index}
-                        className="p-4 border rounded-lg bg-white shadow-lg w-60 text-sm cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="p-4 border rounded-lg bg-white shadow-lg w-60 text-sm cursor-pointer hover:bg-purple-50 transition-colors"
                         onClick={() => handleSuggestionClick(suggestion.text)}
                       >
-                        <span className="text-teal-600 font-semibold">
+                        <span className="text-purple-600 font-semibold">
                           {suggestion.title}
                         </span>
                         <p className="mt-2 text-gray-700">
@@ -313,7 +260,7 @@ const ChatPage: React.FC = () => {
                   className="flex-1 px-4 py-2 outline-none text-gray-800"
                 />
                 <button
-                  className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 transition-colors"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 transition-colors"
                   onClick={handleAsk}
                 >
                   Ask
@@ -327,4 +274,4 @@ const ChatPage: React.FC = () => {
   );
 };
 
-export default ChatPage;
+export default Panduchat;

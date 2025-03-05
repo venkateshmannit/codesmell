@@ -28,7 +28,6 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
       },
     });
     
-    // Clear error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -64,7 +63,6 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      // Simulate success (in a real app, this would be based on the API response)
       const success = Math.random() > 0.3; // 70% chance of success for demo
       
       if (success) {
@@ -102,7 +100,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             value={formData.connectionDetails.hostname}
             onChange={handleChange}
             placeholder="e.g., localhost or db.example.com"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.hostname ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -120,7 +118,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             value={formData.connectionDetails.port}
             onChange={handleChange}
             placeholder="e.g., 5432 for PostgreSQL"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.port ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -139,7 +137,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
           value={formData.connectionDetails.databaseName}
           onChange={handleChange}
           placeholder="Enter database name"
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
             errors.databaseName ? 'border-red-500' : 'border-gray-300'
           }`}
         />
@@ -158,7 +156,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             value={formData.connectionDetails.username}
             onChange={handleChange}
             placeholder="Enter username"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.username ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -176,7 +174,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             value={formData.connectionDetails.password}
             onChange={handleChange}
             placeholder="Enter password"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.password ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -192,7 +190,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             name="useSSL"
             checked={formData.connectionDetails.useSSL}
             onChange={handleChange}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            className="h-4 w-4 text-purple-600 focus:ring-purple-600 border-gray-300 rounded"
           />
           <label htmlFor="useSSL" className="ml-2 block text-sm text-gray-700">
             Use SSL Connection
@@ -200,7 +198,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
         </div>
         
         {formData.connectionDetails.useSSL && (
-          <div className="pl-6 pt-2 border-l-2 border-indigo-100">
+          <div className="pl-6 pt-2 border-l-2 border-purple-100">
             <p className="text-sm text-gray-600 mb-2">
               SSL configuration options would appear here
             </p>
@@ -224,7 +222,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             value={formData.connectionDetails.apiKey}
             onChange={handleChange}
             placeholder="Enter your API key"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.apiKey ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -244,7 +242,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
           value={formData.connectionDetails.accountId}
           onChange={handleChange}
           placeholder="Enter account ID"
-          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
             errors.accountId ? 'border-red-500' : 'border-gray-300'
           }`}
         />
@@ -263,7 +261,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
             value={formData.connectionDetails.datasetId}
             onChange={handleChange}
             placeholder="Enter dataset ID"
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 transition-colors ${
               errors.datasetId ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -274,6 +272,10 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
   );
 
   return (
+    <div
+    className="overflow-y-auto"
+    style={{ maxHeight: '400px', msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+  >
     <div className="animate-fadeIn bg-white p-8 rounded-2xl shadow-lg">
       <h2 className="text-2xl font-bold mb-8 text-gray-800">
         Connection Details for {formData.databaseType.charAt(0).toUpperCase() + formData.databaseType.slice(1)}
@@ -282,7 +284,6 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
       <form onSubmit={handleSubmit}>
         {formData.sourceType === 'self-hosted' ? renderSelfHostedForm() : renderImportedDataSourceForm()}
         
-        {/* Connection status */}
         {connectionStatus === 'success' && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-2 text-green-700">
             <CheckCircle size={20} />
@@ -312,7 +313,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
               type="button"
               onClick={testConnection}
               disabled={isLoading}
-              className="flex items-center gap-2 px-8 py-3 border border-indigo-300 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors w-full md:w-auto"
+              className="flex items-center gap-2 px-8 py-3 border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors w-full md:w-auto"
             >
               {isLoading ? (
                 <>
@@ -330,7 +331,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
               className={`flex items-center gap-2 px-8 py-3 rounded-lg transition-colors w-full md:w-auto ${
                 isLoading || (!formData.isConnected && connectionStatus !== 'success')
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  : 'bg-purple-600 text-white hover:bg-purple-700'
               }`}
             >
               <span className="font-semibold">Next</span>
@@ -339,6 +340,7 @@ const ConnectionDetailsForm: React.FC<ConnectionDetailsFormProps> = ({
           </div>
         </div>
       </form>
+    </div>
     </div>
   );
 };

@@ -24,25 +24,23 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, totalSteps }
           <div 
             key={step.number} 
             className={`flex flex-col items-center relative flex-1 ${
-              isActive ? 'text-indigo-600' : isCompleted ? 'text-green-500' : 'text-gray-400'
+              isActive ? 'text-purple-600' : isCompleted ? 'text-purple-600' : 'text-gray-400'
             }`}
           >
-            {/* Connector line */}
             {step.number < totalSteps && (
               <div 
                 className={`absolute top-5 w-full h-1 left-1/2 ${
-                  step.number < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                  step.number < currentStep ? 'bg-purple-600' : 'bg-gray-200'
                 }`}
               />
             )}
             
-            {/* Step circle */}
             <div 
               className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
                 isActive 
-                  ? 'bg-indigo-100 border-2 border-indigo-600 text-indigo-600' 
+                  ? 'bg-purple-100 border-2 border-purple-600 text-purple-600' 
                   : isCompleted 
-                    ? 'bg-green-500 text-white' 
+                    ? 'bg-purple-600 text-white' 
                     : 'bg-gray-200 text-gray-500'
               }`}
             >
@@ -53,8 +51,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, totalSteps }
               )}
             </div>
             
-            {/* Step title */}
-            <div className="mt-2 text-sm font-medium">
+            <div className="mt-1 text-sm font-medium">
               {step.title}
             </div>
           </div>
