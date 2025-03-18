@@ -1,24 +1,60 @@
-# Logs
-logs
+# Node.js / React
+node_modules/
+build/
+dist/
+coverage/
+.nyc_output/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+.env
 
-node_modules
-dist
-dist-ssr
-*.local
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+*.pyo
+*.pyd
+*.pyc
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Flask-specific
+instance/
+.webassets-cache/
+
+# Database files (SQLite, etc.)
+*.sqlite3
+*.db
+
+# IDE / Editor directories and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Sensitive files (SSL keys, certificates, etc.)
+*.pem
+*.key
+# Hide Node.js modules
+node_modules/
+
+# Hide Python packages and compiled files
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+env/
+venv/

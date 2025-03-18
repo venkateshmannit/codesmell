@@ -8,11 +8,13 @@ const AISectionPage: React.FC = () => {
 
   const handleWrenClick = () => {
     console.log("Wren AI button clicked")
+    sessionStorage.setItem("selectedAssistant", "pandu")
     navigate("/repo Connection")
   }
 
   const handleTinaClick = () => {
     console.log("Tina button clicked")
+    sessionStorage.setItem("selectedAssistant", "tina")
     navigate("/gitauth")
   }
 
@@ -32,6 +34,16 @@ const AISectionPage: React.FC = () => {
 
       {/* Content below the header */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 relative z-10 mt-16">
+        {/* New section added for AI Section page */}
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+            Welcome to AI Section
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Your journey to intelligent solutions starts here.
+          </p>
+        </div>
+
         <div className="max-w-4xl w-full mx-auto text-center">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-800/30 text-purple-700 dark:text-purple-200 text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4 mr-2" />
@@ -54,9 +66,11 @@ const AISectionPage: React.FC = () => {
                 <div className="w-14 h-14 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
                   <Zap className="w-7 h-7 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Pandu</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Pandu
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
-                Advanced AI for data processing and intelligent dashboard insights.
+                  Advanced AI for data processing and intelligent dashboard insights.
                 </p>
                 <button
                   onClick={handleWrenClick}
@@ -75,9 +89,10 @@ const AISectionPage: React.FC = () => {
                 <div className="w-14 h-14 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-4">
                   <Cpu className="w-7 h-7 text-teal-600 dark:text-teal-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Tina</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Tina
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
-                 
                   Powerful AI assistant for repository connections and code analysis.
                 </p>
                 <button
@@ -94,11 +109,17 @@ const AISectionPage: React.FC = () => {
           <div className="mt-16 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Need help choosing?{" "}
-              <a href="#" className="text-purple-600 dark:text-purple-400 hover:underline">
+              <a
+                href="#"
+                className="text-purple-600 dark:text-purple-400 hover:underline"
+              >
                 View comparison
               </a>{" "}
               or{" "}
-              <a href="#" className="text-purple-600 dark:text-purple-400 hover:underline">
+              <a
+                href="#"
+                className="text-purple-600 dark:text-purple-400 hover:underline"
+              >
                 contact support
               </a>
             </p>

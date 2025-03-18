@@ -1,18 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import LogoSVG from "../../assets/LogoSVG"; // Adjust the path if needed
 
 export default function Header() {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuth();
+
+  // Use currentPath to check the current route
+  const currentPath = decodeURIComponent(location.pathname);
 
   // Close dropdown if clicked outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -21,70 +31,141 @@ export default function Header() {
     setDropdownOpen((prev) => !prev);
   };
 
+  // Logout confirmation modal display
   const handleLogout = () => {
-    // Replace with your logout logic
-    console.log("User logged out");
+    setShowLogoutConfirmation(true);
     setDropdownOpen(false);
   };
 
+  const confirmLogout = () => {
+    logout();
+    navigate("/login");
+    setShowLogoutConfirmation(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirmation(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen((prev) => !prev);
+  };
+
+  // Home button click handler
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    const loginOption = sessionStorage.getItem("loginOption");
+    if (loginOption === "github") {
+      navigate("/dashboard");
+    } else if (loginOption === "demo") {
+      navigate("/gitauth");
+    } else {
+      navigate("/AI Section");
+    }
+  };
+
   return (
-    <header className="relative flex items-center justify-between px-4 py-2 bg-gray-800 text-white">
-      <div className="flex items-center space-x-6">
-        {/* Logo */}
-        <a href="/" className="flex items-center space-x-2">
-          <div className="h-12 w-12">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-12 w-12 text-white"
-            >
-              <path d="M15 5.5A2.5 2.5 0 0 0 12.5 3h-1.76a2.74 2.74 0 0 0-2.74 2.74v1.68a2.74 2.74 0 0 0 2.74 2.74h1.76A2.5 2.5 0 0 0 15 7.66" />
-              <path d="M14 9.5a2.5 2.5 0 0 0-2.5 2.5v.76a2.74 2.74 0 0 1-2.74 2.74h-1.68A2.74 2.74 0 0 1 4.34 12.76v-1.76A2.5 2.5 0 0 1 6.84 8.5" />
-              <path d="m7 15 4.5 4.5" />
-              <path d="M19.5 4.5 15 9" />
-              <path d="m15 4.5 3.5 3.5" />
-            </svg>
-          </div>
-          <span className="text-xl font-bold">Code Sense AI</span>
-        </a>
-
-        {/* Navigation */}
-        <nav className="flex items-center space-x-4">
-          <a href="/AI section" className="px-3 py-1 rounded bg-gray-700 text-sm font-medium">
-            Home
+    <>
+      <header className="relative flex items-center justify-between px-4 py-1 bg-gray-800 text-white">
+        {/* Left side: Logo and Home button (hide if current route is "/AI section") */}
+        <div className="flex items-center space-x-4">
+          <a href="/AI section" className="flex items-center space-x-2">
+            <div className="h-10 w-10">
+              <LogoSVG />
+            </div>
+            <span className="text-lg sm:text-xl font-bold">Code Sense AI</span>
           </a>
-          {/* Uncomment or add more links as needed */}
-          {/* <a href="/modeling" className="px-3 py-1 text-sm font-medium">
-            Modeling
-          </a> */}
-        </nav>
-      </div>
-
-      <div className="relative flex items-center space-x-2" ref={dropdownRef}>
-        {/* Profile Avatar with Dropdown Toggle */}
-        <button onClick={handleProfileClick} className="ml-4 flex items-center focus:outline-none">
-          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-sm font-medium">
-            MA
-          </div>
-          <ChevronDown size={16} className="ml-1" />
-        </button>
-
-        {/* Dropdown Menu */}
-        {isDropdownOpen && (
-          <div className="absolute right-0 mt-12 w-48 bg-white text-black rounded shadow-md z-10">
-            <button 
-              onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+          {currentPath !== "/AI section" && (
+            <a
+              href="/repo history"
+              onClick={handleHomeClick}
+              className="px-3 py-1 text-sm md:text-base font-medium hover:bg-gray-700 rounded"
             >
-              Logout
+              Home
+            </a>
+          )}
+        </div>
+
+        {/* Mobile menu button and profile */}
+        <div className="md:hidden flex items-center">
+          <button onClick={toggleMobileMenu} className="p-2 focus:outline-none">
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          <div className="relative ml-2" ref={dropdownRef}>
+            <button onClick={handleProfileClick} className="flex items-center focus:outline-none">
+              <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-sm font-medium">
+                {user ? user.username.charAt(0).toUpperCase() : "U"}
+              </div>
+              <ChevronDown size={16} className="ml-1" />
             </button>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-12 w-40 bg-white text-black rounded shadow-md z-10">
+                <a href="/AI section" className="block text-left px-4 py-2 hover:bg-gray-200">
+                  AI Section
+                </a>
+                <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-200">
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </header>
+        </div>
+
+        {/* Profile dropdown for larger screens */}
+        <div className="hidden md:flex items-center" ref={dropdownRef}>
+          <button onClick={handleProfileClick} className="ml-4 flex items-center focus:outline-none">
+            <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-sm font-medium">
+              {user ? user.username.charAt(0).toUpperCase() : "U"}
+            </div>
+            <ChevronDown size={16} className="ml-1" />
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute right-4 mt-12 w-40 bg-white text-black rounded shadow-md z-10">
+              <a href="/AI section" className="block text-left px-4 py-2 hover:bg-gray-200">
+                AI Section
+              </a>
+              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-200">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Mobile navigation menu */}
+      {mobileMenuOpen && (
+        <nav className="md:hidden bg-gray-800 text-white px-4 py-2">
+          {currentPath !== "/AI section" && (
+            <a
+              href="/repo history"
+              onClick={handleHomeClick}
+              className="block px-3 py-1 text-sm hover:bg-gray-700 rounded"
+            >
+              Home
+            </a>
+          )}
+        </nav>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-black opacity-50"></div>
+          {/* Modal Content */}
+          <div className="bg-white p-6 rounded shadow-lg z-10">
+            <p className="mb-4 text-sm md:text-base">Are you sure you want to logout?</p>
+            <div className="flex justify-end space-x-4">
+              <button onClick={cancelLogout} className="px-4 py-2 bg-gray-200 rounded text-sm">
+                Cancel
+              </button>
+              <button onClick={confirmLogout} className="px-4 py-2 bg-red-500 text-white rounded text-sm">
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

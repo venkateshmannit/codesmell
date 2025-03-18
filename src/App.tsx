@@ -7,18 +7,19 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Tina/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import GitHubLogin from "./pages/GitHubLogin";
+import GitHubLogin from "./pages/Tina/GitHubLogin";
+import Dashboarddemo from './pages/Tina/Dashboarddemo';  
 
 import AISectionPage from "./pages/AISectionPage";
-import RepoCon from "./pages/Repo connection/rconnection";
-import Chatpage from "./pages/ChatPage/chatpage";
-import Panduchat from "./pages/ChatPage/panduchat";
-import Modeling from "./pages/Diagram page/ModelingFlow";
-import GitHubCallback from "./pages/GitHubCallback";
-import My from "./pages/repohistory";
+import RepoCon from "./pages/Pandu/DataCon/rconnection";
+import Chatpage from "./pages/Tina/Chatspage/chatpage";
+import Panduchat from "./pages/Pandu/chatpage/punduchat";
+import Modeling from "./pages/Pandu/modeling/ModelingFlow";
+import GitHubCallback from "./pages/Tina/GitHubCallback";
+import My from "./pages/Tina/repohistory";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -41,82 +42,90 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
               <Dashboard />
 
-              // </PrivateRoute>
+               </PrivateRoute>
+            }
+          />
+          <Route
+            path="/Dashboarddemo" 
+            element={
+              <PrivateRoute>
+                <Dashboarddemo />
+              </PrivateRoute>
             }
           />
           <Route
             path="/AI section"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
               <AISectionPage />
 
-              // </PrivateRoute>
+               </PrivateRoute>
             }
           />
           <Route
             path="/repo Connection"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
               <RepoCon />
 
-              // </PrivateRoute>
+               </PrivateRoute>
             }
           />
           <Route
             path="/chatpage"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
               <Chatpage />
 
-              // </PrivateRoute>
+              </PrivateRoute>
             }
           />
           <Route
             path="/modeling"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
               <Modeling />
 
-              // </PrivateRoute>
+               </PrivateRoute>
             }
           />
 
           <Route
             path="/panduchat"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
-              <Panduchat />
+              < Panduchat />
 
-              // </PrivateRoute>
+               </PrivateRoute>
             }
           />
           <Route
             path="/gitauth"
             element={
-              // <PrivateRoute>
+              <PrivateRoute>
 
               <GitHubLogin />
 
-              // </PrivateRoute>
+             </PrivateRoute>
             }
           />
           <Route
             path="/repo history"
             element={
-              // <PrivateRoute>
+               <PrivateRoute>
 
               <My />
 
-              // </PrivateRoute>
+              </PrivateRoute>
             }
           />
 

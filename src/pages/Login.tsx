@@ -3,27 +3,67 @@ import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
 import { useAuth } from '../context/AuthContext';
-import { User, Lock, Github, Eye, EyeOff } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Loader } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const validateUsername = () => {
+    if (!username.trim()) {
+      toast.error("Username is required");
+    }
+  };
+
+  const validatePassword = () => {
+    if (!password) {
+      toast.error("Password is required");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!username.trim()) {
+      toast.error("Username is required");
+      return;
+    }
+    if (!password) {
+      toast.error("Password is required");
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const response = await api.login(username, password);
-      if (response.message === 'Login successful!') {
+
+      if (response.errors) {
+        if (response.errors.username) {
+          toast.error(response.errors.username);
+        }
+        if (response.errors.password) {
+          toast.error(response.errors.password);
+        }
+      } else if (response.message === 'Login successful!') {
+        sessionStorage.setItem('userId', response.user_id);
+        sessionStorage.setItem('authToken', response.api_key);  // Saving auth token in session storage
         login(response.username, response.api_key, 'password');
         navigate('/AI section');
       } else {
         toast.error(response.message);
       }
-    } catch (error) {
-      toast.error('Login failed');
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        toast.error("Invalid username or password");
+      } else {
+        toast.error("Login failed");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -31,7 +71,6 @@ const Login: React.FC = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-14 shadow-sm">
         <div className="mb-6 flex flex-col items-center">
-          {/* Logo image with shadow */}
           <div className="mb-4 flex h-16 w-16 items-center justify-center">
             <svg
               viewBox="0 0 24 24"
@@ -49,14 +88,13 @@ const Login: React.FC = () => {
               <path d="m15 4.5 3.5 3.5" />
             </svg>
           </div>
-
           <h1 className="text-2xl font-semibold text-gray-900">Welcome</h1>
           <p className="mt-2 text-center text-gray-600">Log in to Code Sense AI</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
             <label htmlFor="username" className="text-sm font-medium text-gray-700">
-              Username<span className="text-blue-600">*</span>
+              Username<span className="text-purple-600">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -68,14 +106,15 @@ const Login: React.FC = () => {
                 placeholder="Your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                onBlur={validateUsername}
+                className="w-full pl-10 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                 required
               />
             </div>
           </div>
           <div className="space-y-1">
             <label htmlFor="password" className="text-sm font-medium text-gray-700">
-              Password<span className="text-blue-600">*</span>
+              Password<span className="text-purple-600">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -87,7 +126,8 @@ const Login: React.FC = () => {
                 placeholder="Your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                onBlur={validatePassword}
+                className="w-full pl-10 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                 required
               />
               <button
@@ -100,19 +140,27 @@ const Login: React.FC = () => {
             </div>
           </div>
           <div className="text-right">
-            <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/forgot-password" className="text-sm font-medium text-purple-600 hover:text-purple-500">
               Forgot password?
             </Link>
           </div>
           <button
             type="submit"
-            className="w-full rounded-md bg-blue-600 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            disabled={isLoading}
+            className="w-full rounded-md bg-purple-600 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >
-            Continue
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <Loader size={20} className="animate-spin mr-2" />
+                Logging in...
+              </div>
+            ) : (
+              'Continue'
+            )}
           </button>
           <div className="mt-4 text-center text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/register" className="font-medium text-purple-600 hover:text-purple-500">
               Sign up
             </Link>
           </div>
